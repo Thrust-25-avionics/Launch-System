@@ -106,7 +106,7 @@ void readXbee()
     uint16_t recSize = 0;
 
     recSize = myTransfer.rxObj(testStruct, recSize);
-    if (testStruct.msg == 'c')
+    if (testStruct.msg == 'C')
     {
         comm_state = 1;
     }
@@ -123,9 +123,9 @@ void sendFireSig()
     // use this variable to keep track of how many
     // bytes we're stuffing in the transmit buffer
     uint16_t sendSize = 0;
-    char arr[] = "FIRE";
+    char sig = 'F';
 
-    sendSize = myTransfer.txObj(arr, sendSize);
+    sendSize = myTransfer.txObj(sig, sendSize);
 
     ///////////////////////////////////////// Send buffer
     myTransfer.sendData(sendSize);
@@ -137,9 +137,9 @@ void sendArmSig()
     // use this variable to keep track of how many
     // bytes we're stuffing in the transmit buffer
     uint16_t sendSize = 0;
-    char arr[] = "ARM";
+    char sig = 'A';
 
-    sendSize = myTransfer.txObj(arr, sendSize);
+    sendSize = myTransfer.txObj(sig, sendSize);
 
     ///////////////////////////////////////// Send buffer
     myTransfer.sendData(sendSize);

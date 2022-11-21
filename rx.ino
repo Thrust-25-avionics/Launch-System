@@ -11,13 +11,14 @@
 #include <HX711_ADC.h>
 #include <SPI.h>
 #include <SD.h>
+#include <string.h>
 
 // pins:
-#define HX711_dout 4; // mcu > HX711 dout pin
-#define HX711_sck 5;  // mcu > HX711 sck pin
-#define fire_mosfet 10; //mosfet
-#define presstrans_pin = A0; //pressure transducer
-#define buzzer 7; //buzzer
+#define HX711_dout 4;        // mcu > HX711 dout pin
+#define HX711_sck 5;         // mcu > HX711 sck pin
+#define fire_mosfet 10;      // mosfet
+#define presstrans_pin = A0; // pressure transducer
+#define buzzer 7;            // buzzer
 
 // HX711 instance:
 HX711_ADC LoadCell(HX711_dout, HX711_sck);
@@ -25,7 +26,7 @@ HX711_ADC LoadCell(HX711_dout, HX711_sck);
 // SoftwareSerial instance
 SoftwareSerial Xbee(4, 5); // RX, TX
 
-//SerialTransfer instance
+// SerialTransfer instance
 SerialTransfer myTransfer;
 
 // struct definition
@@ -34,28 +35,32 @@ struct _attribute_((packed)) STRUCT
     char msg;
     float presstrans_val;
     float loadcell_val;
-}testStruct;
-
+}
+testStruct;
 
 #define chip_select 10; // cs for sdcard
 
 unsigned long t = 0;
+int arm_state = 0;
 int fire_state = 0;
 
-const int presstrans_max_PSI = 100;//max value output of press trans (to change)
-
+const int presstrans_max_PSI = 100; // max value output of press trans (to change)
 
 // TODO: get pressure transducer and the load cell readings
 void setup()
-{   
+{
     // Xbee setup:
     Serial.begin(9600);
-    while (!Serial) ;
+    while (!Serial)
+        ;
     Xbee.begin(9600);
     myTransfer.begin(Xbee);
+    testStruct.msg = 'C';
 
     // fire mosfet
     pinMode(fire_mosfet, OUTPUT);
+    // buzzer
+    pinMode(buzzer, OUTPUT);
 
     // Loadcell setup:
     LoadCell.begin();
@@ -68,7 +73,8 @@ void setup()
     if (LoadCell.getTareTimeoutFlag())
     {
         Serial.println("Timeout, check MCU>HX711 wiring and pin designations");
-        while (1);
+        while (1)
+            ;
     }
     else
     {
@@ -76,7 +82,6 @@ void setup()
         Serial.println("Startup is complete");
     }
 
-    
     // sdcard setup:
     Serial.print("Initializing SD card...");
 
@@ -89,33 +94,37 @@ void setup()
             ;
     }
     Serial.println("card initialized.");
-    
 }
 
 void loop()
 {
 
-    
-
-    if(myTransfer.available()){
+    if (myTransfer.available())
+    {
         readXbee();
+    }
+
+    // turning buzzer on
+    if (arm_state = 1)
+    {
+        tone(buzzer, 1000);
     }
 
     // TODO: send data back
     testStruct.loadcell_val = getloadcell_val();
     testStruct.presstrans_val = getpresstrans_val();
 
-    //sending data back;
+    // sending data back;
     writeXbee();
 
-    writeSDCard() ; //write into sd card
+    writeSDCard(); // write into sd card
 
     delay(10);
 }
 
 void writeSDCard()
 {
-    String dataString = millis() + "," + presstrans_val + "," + loadcell_val;
+    String dataString = millis() + "," + testStruct.presstrans_val + "," + testStruct.loadcell_val;
     // open the file. note that only one file can be open at a time,
     // so you have to close this one before opening another.
     File dataFile = SD.open("datalog.txt", FILE_WRITE);
@@ -125,8 +134,8 @@ void writeSDCard()
     {
         dataFile.println(dataString);
         dataFile.close();
-    
-        Serial.println(dataString);// print to the serial port too:
+
+        Serial.println(dataString); // print to the serial port too:
     }
     // if the file isn't open, pop up an error:
     else
@@ -138,9 +147,8 @@ void writeSDCard()
 float getpresstrans_val()
 {
     float val = analogRead(presstrans_pin);
-    val =( (val - 102.4)*presstrans_max_PSI)/(921.6-102.4);
+    val = ((val - 102.4) * presstrans_max_PSI) / (921.6 - 102.4);
     return val;
-
 }
 
 float getloadcell_val()
@@ -183,6 +191,29 @@ float getloadcell_val()
     return val;
 }
 
-void readXbee(){
+void readXbee()
+{
+    uint16_t recSize = 0;
+    char sig;
 
+    recSize = myTransfer.rxObj(sig, recSize);
+    if (sig == 'A')
+    {
+        arm_state = 1;
+    }
+}
+
+void writeXbee()
+{
+
+    // use this variable to keep track of how many
+    // bytes we're stuffing in the transmit buffer
+    uint16_t sendSize = 0;
+
+    ///////////////////////////////////////// Stuff buffer with struct
+    sendSize = myTransfer.txObj(testStruct, sendSize);
+
+    ///////////////////////////////////////// Send buffer
+    myTransfer.sendData(sendSize);
+    delay(100);
 }
