@@ -105,9 +105,17 @@ void loop()
     }
 
     // turning buzzer on
-    if (arm_state = 1)
+    if (arm_state == 1)
     {
         tone(buzzer, 1000);
+    }
+
+    if (fire_state == 1)
+    {
+        digitalWrite(fire_mosfet, HIGH);
+        Serial.println("FIrED");
+        delay(10);
+        digitalWrite(fire_mosfet, LOW);
     }
 
     // TODO: send data back
@@ -200,6 +208,10 @@ void readXbee()
     if (sig == 'A')
     {
         arm_state = 1;
+    }
+    if (sig == 'F')
+    {
+        fire_state = 1;
     }
 }
 
