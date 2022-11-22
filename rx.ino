@@ -14,11 +14,11 @@
 #include <string.h>
 
 // pins:
-#define HX711_dout 4;        // mcu > HX711 dout pin
-#define HX711_sck 5;         // mcu > HX711 sck pin
-#define fire_mosfet 10;      // mosfet
-#define presstrans_pin = A0; // pressure transducer
-#define buzzer 7;            // buzzer
+#define HX711_dout 4        // mcu > HX711 dout pin
+#define HX711_sck 5         // mcu > HX711 sck pin
+#define fire_mosfet 10      // mosfet
+#define presstrans_pin = A0 // pressure transducer
+#define buzzer 7            // buzzer
 
 // HX711 instance:
 HX711_ADC LoadCell(HX711_dout, HX711_sck);
@@ -38,7 +38,7 @@ struct _attribute_((packed)) STRUCT
 }
 testStruct;
 
-#define chip_select 10; // cs for sdcard
+#define chip_select 10 // cs for sdcard
 
 unsigned long t = 0;
 int arm_state = 0;
@@ -75,10 +75,11 @@ void setup()
         Serial.println("Timeout, check MCU>HX711 wiring and pin designations");
         while (1)
             ;
+        ;
     }
     else
     {
-        LoadCell.setCalFactor(calibrationValue); // set calibration value (float)
+        LoadCell.setCalFactor(calibrationVal); // set calibration value (float)
         Serial.println("Startup is complete");
     }
 
@@ -132,7 +133,8 @@ void loop()
 
 void writeSDCard()
 {
-    String dataString = millis() + "," + testStruct.presstrans_val + "," + testStruct.loadcell_val;
+    String dataString = String(millis(), 3) + "," + String(testStruct.presstrans_val, 3) + "," + String(testStruct.loadcell_val, 3);
+
     // open the file. note that only one file can be open at a time,
     // so you have to close this one before opening another.
     File dataFile = SD.open("datalog.txt", FILE_WRITE);
@@ -176,7 +178,7 @@ float getloadcell_val()
         {
             val = LoadCell.getData();
             Serial.print("Load_cell output val: ");
-            Serial.println(i);
+            Serial.println(val);
             newDataReady = 0;
             t = millis();
         }

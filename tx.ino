@@ -23,14 +23,14 @@ struct _attribute_((packed)) STRUCT
 SoftwareSerial Xbee(4, 5); // RX, TX
 
 // led pin out
-#define safety_led 10;
-#define arm_led 11;
-#define fire_led 12;
-#define comm_led 13;
+#define safety_led 10
+#define arm_led 11
+#define fire_led 12
+#define comm_led 13
 
 // switches pin in
-#define arm_switch 14;
-#define fire_switch 15;
+#define arm_switch 14
+#define fire_switch 15
 
 // keeping track of states
 int arm_state = 0;
