@@ -14,20 +14,20 @@
 #include <string.h>
 
 // pins:
-#define HX711_dout 4        // mcu > HX711 dout pin
-#define HX711_sck 5         // mcu > HX711 sck pin
-#define fire_mosfet 10      // mosfet
+#define HX711_dout 4      // mcu > HX711 dout pin
+#define HX711_sck 5       // mcu > HX711 sck pin
+#define fire_mosfet 10    // mosfet
 #define presstrans_pin A0 // pressure transducer
-#define buzzer 7            // buzzer
+#define buzzer 7          // buzzer
 
 // HX711 instance:
 HX711_ADC LoadCell(HX711_dout, HX711_sck);
 
-// SoftwareSerial instance
-SoftwareSerial Xbee(4, 5); // RX, TX
-
 // SerialTransfer instance
 SerialTransfer myTransfer;
+
+// SoftwareSerial instance
+SoftwareSerial Xbee(4, 5); // RX, TX
 
 // struct definition
 struct STRUCT
@@ -35,7 +35,7 @@ struct STRUCT
     char msg;
     float presstrans_val;
     float loadcell_val;
-}testStruct;
+} testStruct;
 
 #define chip_select 10 // cs for sdcard
 
@@ -50,8 +50,7 @@ void setup()
 {
     // Xbee setup:
     Serial.begin(9600);
-    while (!Serial)
-        ;
+    while (!Serial);
     Xbee.begin(9600);
     myTransfer.begin(Xbee);
     testStruct.msg = 'C';
