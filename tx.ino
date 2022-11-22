@@ -13,12 +13,12 @@
 SerialTransfer myTransfer;
 
 // struct definition
-struct _attribute_((packed)) STRUCT
+struct STRUCT
 {
     char msg;
     float presstrans_val;
     float loadcell_val;
-}testStruct;
+} testStruct;
 
 SoftwareSerial Xbee(4, 5); // RX, TX
 
@@ -115,7 +115,7 @@ void readXbee()
         comm_state = 0;
     }
 
-    Serial.println("pressure: " + testStruct.presstrans_val + "PSI  ; " + "load cell: " + testStruct.loadcell_val + " kg");
+    Serial.println("pressure: " + String(testStruct.presstrans_val) + "PSI  ; " + "load cell: " + String(testStruct.loadcell_val) + " kg");
 }
 
 void sendFireSig()

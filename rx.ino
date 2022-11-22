@@ -17,7 +17,7 @@
 #define HX711_dout 4        // mcu > HX711 dout pin
 #define HX711_sck 5         // mcu > HX711 sck pin
 #define fire_mosfet 10      // mosfet
-#define presstrans_pin = A0 // pressure transducer
+#define presstrans_pin A0 // pressure transducer
 #define buzzer 7            // buzzer
 
 // HX711 instance:
@@ -30,13 +30,12 @@ SoftwareSerial Xbee(4, 5); // RX, TX
 SerialTransfer myTransfer;
 
 // struct definition
-struct _attribute_((packed)) STRUCT
+struct STRUCT
 {
     char msg;
     float presstrans_val;
     float loadcell_val;
-}
-testStruct;
+}testStruct;
 
 #define chip_select 10 // cs for sdcard
 
