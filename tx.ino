@@ -20,6 +20,8 @@ struct STRUCT
     float loadcell_val;
 } testStruct;
 
+char sig[6];
+
 SoftwareSerial Xbee(4, 5); // RX, TX
 
 // led pin out
@@ -101,11 +103,9 @@ void readXbee()
 
     comm_state = 0;
 
-    // use this variable to keep track of how many
-    // bytes we've processed from the receive buffer
-    uint16_t recSize = 0;
+    // reading struct from xbee
+    myTransfer.rxObj(testStruct);
 
-    recSize = myTransfer.rxObj(testStruct, recSize);
     if (testStruct.msg == 'C')
     {
         comm_state = 1;
@@ -120,28 +120,15 @@ void readXbee()
 
 void sendFireSig()
 {
-    // use this variable to keep track of how many
-    // bytes we're stuffing in the transmit buffer
-    uint16_t sendSize = 0;
-    char sig = 'F';
-
-    sendSize = myTransfer.txObj(sig, sendSize);
-
-    ///////////////////////////////////////// Send buffer
-    myTransfer.sendData(sendSize);
+    strcpy(sig, "FIRE");
+    myTransfer.sendDatum(sig);
     delay(100);
 }
 
 void sendArmSig()
 {
-    // use this variable to keep track of how many
-    // bytes we're stuffing in the transmit buffer
-    uint16_t sendSize = 0;
-    char sig = 'A';
 
-    sendSize = myTransfer.txObj(sig, sendSize);
-
-    ///////////////////////////////////////// Send buffer
-    myTransfer.sendData(sendSize);
+    strcpy(sig, "ARM");
+    myTransfer.sendDatum(sig);
     delay(100);
 }

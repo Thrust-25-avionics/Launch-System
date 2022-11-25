@@ -50,7 +50,8 @@ void setup()
 {
     // Xbee setup:
     Serial.begin(9600);
-    while (!Serial);
+    while (!Serial)
+        ;
     Xbee.begin(9600);
     myTransfer.begin(Xbee);
     testStruct.msg = 'C';
@@ -201,15 +202,15 @@ float getloadcell_val()
 
 void readXbee()
 {
-    uint16_t recSize = 0;
-    char sig;
 
-    recSize = myTransfer.rxObj(sig, recSize);
-    if (sig == 'A')
+    char sig[6];
+
+    myTransfer.rxObj(sig);
+    if (strcmp(sig, "ARM") == 0)
     {
         arm_state = 1;
     }
-    if (sig == 'F')
+    if (strcmp(sig, "FIRE") == 0)
     {
         fire_state = 1;
     }
@@ -218,14 +219,6 @@ void readXbee()
 void writeXbee()
 {
 
-    // use this variable to keep track of how many
-    // bytes we're stuffing in the transmit buffer
-    uint16_t sendSize = 0;
-
-    ///////////////////////////////////////// Stuff buffer with struct
-    sendSize = myTransfer.txObj(testStruct, sendSize);
-
-    ///////////////////////////////////////// Send buffer
-    myTransfer.sendData(sendSize);
-    delay(100);
+    myTransfer.sendDatum(testStruct);
+    delay(500);
 }
